@@ -3,22 +3,7 @@
 #Depending on the operating system of the host machines(s) that will build or run the containers, the image specified in the FROM statement may need to be changed.
 #For more information, please see https://aka.ms/containercompat
 
-FROM microsoft/aspnetcore:2.0-nanoserver-sac2016 AS base
+FROM microsoft/aspnetcore:2.0
 WORKDIR /app
-EXPOSE 80
-
-FROM microsoft/aspnetcore-build:2.0-nanoserver-sac2016 AS build
-WORKDIR /src
-COPY ["Aplicacao.csproj", ""]
-RUN dotnet restore "./Aplicacao.csproj"
-COPY . .
-WORKDIR "/src/."
-RUN dotnet build "Aplicacao.csproj" -c Release -o /app/build
-
-FROM build AS publish
-RUN dotnet publish "Aplicacao.csproj" -c Release -o /app/publish
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
+COPY ./publish .
 ENTRYPOINT ["dotnet", "Aplicacao.dll"]
